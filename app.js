@@ -1,9 +1,7 @@
 import { polygonContains } from 'https://cdn.skypack.dev/d3-polygon@3';
 import * as ls from './localStorage.js';
 
-const dataAPI =
-  'https://services.arcgis.com/HfwHS0BxZBQ1E5DY/arcgis/rest/services/PoliticalBoundaries_mso/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson';
-const outputEl = document.querySelector('[data-output]');
+const outputEl = document.querySelector('main');
 
 navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
 
@@ -11,14 +9,15 @@ navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
  * geoSuccess
  * @description Fetch external or local data, find neighborhood, update DOM,
  * set local data
- * @param {object} position - GeolocationPosition
+ * @param {Geolocation} position - Geolocation interface
  */
 async function geoSuccess(position) {
   const lat = position.coords.latitude;
   const long = position.coords.longitude;
   const alt = position.coords.altitude;
   const point = [long, lat];
-
+  const dataAPI =
+    'https://services.arcgis.com/HfwHS0BxZBQ1E5DY/arcgis/rest/services/PoliticalBoundaries_mso/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson';
   let hoods;
 
   if (!ls.isAvailable() || !ls.get('NEIGHBORHOODSv1')) {
@@ -45,7 +44,7 @@ function geoError(error) {
  * findHood
  * @param {object} data - GeoJSON data
  * @param {array} point - [long, lat]
- * @returns {string|Array|undefined}
+ * @returns {string|undefined} - the name of the neighborhood(s) or undefined
  */
 function findHood(data, point) {
   const hoods = data.features;
@@ -62,40 +61,40 @@ function findHood(data, point) {
   if (hood.length === 1) {
     return hood[0].properties['FeatureName'];
   } else if (hood.length > 1) {
-    return hood.map((h) => h.properties['FeatureName']); // multiple matches
+    return hood.map((h) => h.properties['FeatureName']).join(' or ');
   } else {
-    return undefined; // no matches
+    return undefined;
   }
 }
 
 /**
  * updateDOM
  * @description Update DOM with neighborhood and position data
- * @param {string|Array|undefined} name name of neighborhood(s)
- * @param {string} lat latitude
- * @param {string} long longitude
- * @param {string} alt altitude
+ * @param {string|undefined} name - name of neighborhood(s)
+ * @param {string} lat - latitude
+ * @param {string} long - longitude
+ * @param {string} alt - altitude
  */
 function updateDOM(name, lat, long, alt) {
-  const lat_long = `(${lat}, ${long})`;
+  const FT_IN_M = 3.28084;
+  const _lat = parseFloat(lat).toFixed(4);
+  const _long = parseFloat(long).toFixed(4);
+  const _alt = Math.round(parseFloat(alt).toFixed(2) * FT_IN_M);
   let nameEl;
 
   if (!name) {
     nameEl = `<h2>It appears you aren't in Missoula 🙃🏔️🌲🐻</h2>`;
-  } else if (Array.isArray(name)) {
-    nameEl = `<h2>${name.join(' or ')}</h2>`;
-  } else if (typeof name === 'string') {
-    nameEl = `<h2>${name}</h2>`;
+  } else {
+    const moCitySearch = `https://www.ci.missoula.mt.us/Search?searchPhrase=${name}`;
+    nameEl = `<h2><a href="${moCitySearch}">${name}</a></h2>`;
   }
 
   const summary = `
   <ul>
-    <li>Latitude: ${lat}</li>
-    <li>Longitude: ${long}</li>
-    <li>Altitude: ${alt}</li>
+    <li>Latitude: ${_lat}°</li>
+    <li>Longitude: ${_long}°</li>
+    <li>Altitude: ${_alt} ft</li>
   </ul>`;
-  const href = `https://duckduckgo.com/?q=${lat_long}`;
-  const link = `<a style="display: block;" href="${href}">${lat_long}</a>`;
 
-  outputEl.innerHTML = nameEl + summary + link;
+  outputEl.innerHTML = nameEl + summary;
 }

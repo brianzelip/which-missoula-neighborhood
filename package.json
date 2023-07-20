@@ -1,0 +1,20 @@
+{
+  "name": "which-missoula-neighborhood",
+  "version": "1.0.0",
+  "description": "Geolocation web app to find which Missoula, MT neighborhood you're in.",
+  "keywords": [
+    "geolocation",
+    "missoula",
+    "montana",
+    "neighborhood"
+  ],
+  "author": {
+    "name": "Brian Zelip",
+    "url": "https://zelip.me"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brianzelip/which-missoula-neighborhood.git"
+  },
+  "license": "MIT"
+}

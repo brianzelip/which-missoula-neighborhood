@@ -1,0 +1,64 @@
+:root {
+  /* via https://www.umt.edu/brand/colors.php */
+  --griz-maroon: #70002e;
+  --copper-climb: #ed8b00;
+  --wheat: #efe8d4;
+  --lubrecht-green: #1d3c34;
+  --glacier-sky: #bbdde6;
+
+  --text: var(--griz-maroon);
+  --bg: var(--wheat);
+  --link: var(--text);
+  --topography: var(--copper-climb);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: var(--wheat);
+    --bg: var(--lubrecht-green);
+    --link: var(--copper-climb);
+    --topography: var(--glacier-sky);
+  }
+}
+
+body {
+  height: 100dvh;
+  margin: 0;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+header,
+footer,
+h2 {
+  text-align: center;
+}
+
+a {
+  color: var(--link);
+}
+a:hover {
+  text-decoration: none;
+}
+
+.topography {
+  position: absolute;
+  z-index: -1;
+  height: 100%;
+  width: 100%;
+  mask-image: url(./topography.svg);
+  background-color: var(--topography);
+}
+
+@media screen and (min-height: 700px) {
+  main {
+    padding-bottom: 10rem;
+  }
+}
